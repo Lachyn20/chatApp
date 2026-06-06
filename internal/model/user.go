@@ -11,6 +11,10 @@ type User struct {
 	UpdatedAt time.Time `json:"updated_at" gorm:"column:updated_at;autoUpdateTime"`
 }
 
+func (User) TableName() string {
+    return "users"
+}
+
 type Chat struct {
 	ID        int       `json:"id" gorm:"primaryKey;autoIncrement;column:id"`
 	Name      string    `json:"name,omitempty" gorm:"size:255;column:name"`
@@ -19,6 +23,10 @@ type Chat struct {
 	CreatedAt time.Time `json:"created_at" gorm:"column:created_at;autoCreateTime"`
 	UpdatedAt time.Time `json:"updated_at" gorm:"column:updated_at;autoUpdateTime"`
 	Creator   *User     `json:"creator,omitempty" gorm:"foreignKey:CreatedBy;references:ID;constraint:OnDelete:CASCADE"`
+}
+
+func (Chat) TableName() string {
+    return "chats"
 }
 
 type ChatParticipant struct {
@@ -44,4 +52,8 @@ type Message struct {
 	UpdatedAt time.Time `json:"updated_at" gorm:"column:updated_at;autoUpdateTime;index:idx_messages_created_at"`
 	Chat      *Chat     `json:"chat,omitempty" gorm:"foreignKey:ChatID;references:ID;constraint:OnDelete:CASCADE"`
 	Sender    *User     `json:"sender,omitempty" gorm:"foreignKey:SenderID;references:ID;constraint:OnDelete:CASCADE"`
+}
+
+func (Message) TableName() string {
+    return "messages"
 }
