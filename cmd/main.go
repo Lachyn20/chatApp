@@ -23,6 +23,17 @@ func main() {
 		log.Fatal("config error:", err)
 	}
 
+	// Initialize database schema before using the raw SQL connection.
+	gormDB, err := db.InitGormDB(cfg)
+	if err != nil {
+		log.Fatal("db migration error:", err)
+	}
+	if gormDB != nil {
+		if sqlDB, err := gormDB.DB(); err == nil {
+			defer sqlDB.Close()
+		}
+	}
+
 	database, err := db.NewPostgres(cfg.DBURL)
 	if err != nil {
 		log.Fatal("db connection error:", err)
@@ -54,7 +65,7 @@ func main() {
 	messageHandler := handler.NewMessageHandler(messageUseCase)
 	chatHandler := handler.NewChatHandler(chatUsecase)
 
-	r := gin.Default()	
+	r := gin.Default()
 
 	// Add middleware
 	r.Use(middleware.LoggingMiddleware())
